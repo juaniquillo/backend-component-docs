@@ -66,7 +66,7 @@ Used internally by the theme manager to cache loaded theme file data.
 
 ## isComponent()
 
-Type assertion — checks if a value implements `BackendComponent`:
+Type assertion,checks if a value implements `BackendComponent`:
 
 ```php
 if (isComponent($value)) {
@@ -78,7 +78,7 @@ PHPStan understands this as a type-narrowing assertion (`@phpstan-assert-if-true
 
 ## isBackedEnum()
 
-Type assertion — checks if a value is a `BackedEnum`:
+Type assertion,checks if a value is a `BackedEnum`:
 
 ```php
 if (isBackedEnum($value)) {
@@ -88,7 +88,7 @@ if (isBackedEnum($value)) {
 
 ## isCellBag()
 
-Type assertion — checks if a value is a `CellBag` instance:
+Type assertion,checks if a value is a `CellBag` instance:
 
 ```php
 if (isCellBag($value)) {

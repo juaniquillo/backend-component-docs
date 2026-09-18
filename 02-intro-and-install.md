@@ -2,18 +2,18 @@
 
 ## What is Laravel Backend Component?
 
-A Laravel package for building dynamic, class-based HTML components entirely in PHP. Component trees are composed via PHP objects that implement `Htmlable`, rendering safely in Blade with `{{ $component }}`.
+A Laravel package for building dynamic, dynamic HTML components entirely in PHP. Component trees are composed via PHP objects that implement `Htmlable`, rendering safely in Blade with `{{ $component }}`.
 
 Internally, the package uses Laravel's `x-dynamic-component` to resolve Blade views from namespaced component paths, giving you the full power of Laravel components without writing Blade HTML markup by hand.
 
 ### Key features
 
-- **50+ HTML components** — divs, buttons, forms, tables, lists, headers, and more
-- **Component composition** — nest any component inside another
-- **Theme system** — Tailwind CSS class management via PHP arrays
-- **Livewire integration** — wrap components as Livewire components
-- **Serialization** — export/import component trees to/from arrays
-- **Three builder flavors** — choose between package views, local app views, or hybrid
+- **50+ HTML components**,divs, buttons, forms, tables, lists, headers, and more
+- **Component composition**,nest any component inside another
+- **Theme system**,Tailwind CSS class management via PHP arrays
+- **Livewire integration**,wrap components as Livewire components
+- **Serialization**,export/import component trees to/from arrays
+- **Three builder flavors**,choose between package views, local app views, or hybrid
 
 ## Installation
 
@@ -80,4 +80,4 @@ All Blade views are registered under the `backend-component::` namespace:
 - Themes: `backend-component::_themes.tailwind.action`
 - Internal utilities: `backend-component::_utilities.resolve-components`
 
-You don't need to reference these directly — the builders resolve the correct paths for you.
+You don't need to reference these directly,the builders resolve the correct paths for you.

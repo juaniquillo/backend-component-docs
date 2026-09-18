@@ -1,6 +1,6 @@
 # Start Here
 
-Welcome to **Laravel Backend Component**. This package lets you build dynamic, class-based HTML components in PHP — no raw Blade HTML required.
+Welcome to **Laravel Backend Component**. This package lets you build dynamic, dynamic HTML components in PHP,no raw Blade HTML required.
 
 ## What is it?
 
@@ -8,11 +8,11 @@ Instead of scattering Blade HTML snippets across your views, you compose compone
 
 ## Why use it?
 
-- **Composable** — nest components inside other components
-- **Themeable** — apply Tailwind CSS classes via a structured theme system
-- **Serializable** — export component trees to arrays and restore them later
-- **Livewire-ready** — wrap any component as a Livewire component
-- **Localizable** — override components and themes from your app's own views
+- **Composable**,nest components inside other components
+- **Themeable**,apply Tailwind CSS classes via a structured theme system
+- **Serializable**,export component trees to arrays and restore them later
+- **Livewire-ready**,wrap any component as a Livewire component
+- **Localizable**,override components and themes from your app's own views
 
 ## Quick tour
 
@@ -39,15 +39,15 @@ $card = ComponentBuilder::make(ComponentEnum::DIV)
 
 ## Prerequisites
 
-- PHP 8.2+
-- Laravel 10, 11, 12, or 13
+- PHP 8.3+
+- Laravel 11, 12, or 13
 
 ## What's next?
 
-- [Intro and install](02-intro-and-install.md) — installation, Tailwind config, setup
-- [How to use](03-how-to-use.md) — creating components, content, attributes, nesting
-- [Builders and Enum](04-builders-and-enum.md) — component builders and the component catalog
-- [Theming](05-theming.md) — the Tailwind theme system
-- [Blade use](06-blade-use.md) — template conventions and rendering
-- [Helpers](07-helpers.md) — namespaced helper functions
-- [Notes](08-notes.md) — architecture, conventions, testing, adding components
+- [Intro and install](02-intro-and-install.md),installation, Tailwind config, setup
+- [How to use](03-how-to-use.md),creating components, content, attributes, nesting
+- [Builders and Enum](04-builders-and-enum.md),component builders and the component catalog
+- [Theming](05-theming.md),the Tailwind theme system
+- [Blade use](06-blade-use.md),template conventions and rendering
+- [Helpers](07-helpers.md),namespaced helper functions
+- [Notes](08-notes.md),architecture, conventions, testing, adding components
