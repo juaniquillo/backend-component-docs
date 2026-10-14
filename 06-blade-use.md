@@ -10,7 +10,7 @@ Components implement `Htmlable`, so they render safely with `{{ }}` syntax:
 {{ $table }}
 ```
 
-Never use `{!! !!}` or `echo`,the component handles escaping and HTML generation internally.
+Never use `{!! !!}` or `echo`, the component handles escaping and HTML generation internally.
 
 ## Component view conventions
 
@@ -38,9 +38,9 @@ Every component Blade template follows a consistent pattern:
 
 ### Template anatomy
 
-1. **`@props(['attrs' => null])`**,the component receives a `DefaultAttributeBag` as the `$attrs` prop
-2. **`@php` block**,extracts server attributes (merged with theme classes), content, and slot
-3. **Render**,the HTML element uses `{{ $attributes->merge($serverAttrs) }}` to combine server-set attributes with any attributes passed from Blade
+1. **`@props(['attrs' => null])`**, the component receives a `DefaultAttributeBag` as the `$attrs` prop
+2. **`@php` block**, extracts server attributes (merged with theme classes), content, and slot
+3. **Render**, the HTML element uses `{{ $attributes->merge($serverAttrs) }}` to combine server-set attributes with any attributes passed from Blade
 
 ### Self-closing elements
 
@@ -80,12 +80,12 @@ When `{{ $component }}` is called:
 Since components are rendered in PHP and passed to Blade as variables, attributes are set via the PHP API (`setAttribute`, `setAttributes`), not via Blade's attribute syntax.
 
 ```php
-// In PHP,set attributes via the API
+// In PHP, set attributes via the API
 $div = ComponentBuilder::make(ComponentEnum::DIV)
     ->setAttribute('class', 'bg-gray-100')
     ->setAttribute('data-controller', 'dropdown');
 
-// In Blade,just render
+// In Blade, just render
 // {{ $div }}
 ```
 

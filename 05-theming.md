@@ -38,7 +38,7 @@ return [
 ];
 ```
 
-Despite the `.blade.php` extension (required for view discovery), these files are pure PHP,they don't contain any Blade syntax.
+Despite the `.blade.php` extension (required for view discovery), these files are pure PHP, they don't contain any Blade syntax.
 
 ## Applying themes
 
@@ -74,7 +74,7 @@ $button = ComponentBuilder::make(ComponentEnum::BUTTON)
 
 ### Theme accumulation
 
-Themes accumulate by default,calling `setTheme` with the same name appends rather than replaces:
+Themes accumulate by default, calling `setTheme` with the same name appends rather than replaces:
 
 ```php
 $button = ComponentBuilder::make(ComponentEnum::BUTTON)
@@ -91,7 +91,7 @@ $button = ComponentBuilder::make(ComponentEnum::BUTTON)
     ->setTheme('action', 'success')
     ->setTheme('action', 'success');
 
-// theme['action'] = ['success'],no duplicate
+// theme['action'] = ['success'], no duplicate
 ```
 
 To replace a theme instead of accumulating, pass `overwrite: true`:
@@ -101,7 +101,7 @@ $button = ComponentBuilder::make(ComponentEnum::BUTTON)
     ->setTheme('action', 'success')
     ->setTheme('action', 'error', overwrite: true);
 
-// theme['action'] = 'error',replaced, not accumulated
+// theme['action'] = 'error', replaced, not accumulated
 ```
 
 The same applies to `setThemes`:

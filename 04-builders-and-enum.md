@@ -34,6 +34,13 @@
 | | `CHECKBOX_INPUT` | `form.checkbox` |
 | | `HIDDEN_INPUT` | `form.hidden` |
 | | `RADIO_INPUT` | `form.radio` |
+| | `NUMBER_INPUT` | `form.number` |
+| | `URL_INPUT` | `form.url` |
+| | `TEL_INPUT` | `form.tel` |
+| | `DATE_INPUT` | `form.date` |
+| | `TIME_INPUT` | `form.time` |
+| | `COLOR_INPUT` | `form.color` |
+| | `RANGE_INPUT` | `form.range` |
 | | `DATALIST` | `form.datalist` |
 | | `TEXTAREA` | `form.textarea` |
 | | `SELECT` | `form.select` |

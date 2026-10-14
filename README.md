@@ -1,6 +1,6 @@
 # Laravel Backend Component
 
-Build dynamic, dynamic HTML components in PHP,no raw Blade HTML required.
+Build dynamic, dynamic HTML components in PHP, no raw Blade HTML required.
 
 ## Documentation
 

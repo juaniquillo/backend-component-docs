@@ -2,9 +2,9 @@
 
 ## Creator's Notes
 
-You might think I don't like HTML or CSS. On the contrary,I love them both. I've been working with these technologies for a long time, and I particularly enjoy semantic HTML and well-structured, reusable CSS.
+You might think I don't like HTML or CSS. On the contrary, I love them both. I've been working with these technologies for a long time, and I particularly enjoy semantic HTML and well-structured, reusable CSS.
 
-But there are times when I wish I could manage complex HTML on the server side. Complex tables and forms with multiple conditionals and access policies, for example. Server-side control also makes it convenient to resolve and cache static content. That's why this package doesn't include every HTML element by default,for layout, it's easier to work directly in HTML or Blade.
+But there are times when I wish I could manage complex HTML on the server side. Complex tables and forms with multiple conditionals and access policies, for example. Server-side control also makes it convenient to resolve and cache static content. That's why this package doesn't include every HTML element by default, for layout, it's easier to work directly in HTML or Blade.
 
 The package's main goals are **simplicity**, **predictability**, and **composability**. Think of the components as primitives: use them as-is, or build higher-level abstractions on top of them. I referenced [MDN's HTML Basics](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/HTML_basics) and [Laravel's component documentation](https://laravel.com/docs/blade#components) to ensure consistency.
 
@@ -27,11 +27,11 @@ Plus an `isFactory` trait on `ComponentFactory` for deserialization from arrays.
 
 - **PHP 8.3+** with `declare(strict_types=1)` on every file
 - **PSR-4** autoloading: `Juaniquillo\BackendComponents` → `src/`
-- **Fluent return types**,all setters return `: static`
-- **Generics in docblocks**,`@param` and `@return` documented for all array types
+- **Fluent return types**, all setters return `: static`
+- **Generics in docblocks**, `@param` and `@return` documented for all array types
 - **Laravel Pint** for code style (PSR-12 based)
 - **PHPStan level 8** for static analysis
-- **No public properties**,all component state is managed through methods
+- **No public properties**, all component state is managed through methods
 
 ## Adding a new component
 
@@ -56,6 +56,10 @@ Plus an `isFactory` trait on `ComponentFactory` for deserialization from arrays.
    ```
 
 3. **Write a feature test** at `tests/Feature/Components/{Category}/{Name}Test.php` following the standard test methods (see Testing section below).
+
+For **PropsComponent** (third-party packages), create your own class implementing `BackendComponent`, `ContentComponent`, `Htmlable`, `PathComponent`, `PropsComponent`, `SettingsComponent`, `ThemeComponent` and using traits `HasContent`, `HasPath`, `HasProps`, `HasSettings`, `IsBackendComponent`, `IsThemeable`. Use `setProp()`/`getProp()`/`setProps()`/`getProps()` for typed props, and `toHtml()` which renders via `backend-component::_utilities.resolve-third-party-component`. (The example class aliases the contract as `PropsContract` to avoid colliding with its own class name — the interface itself is `Contracts\PropsComponent`.)
+
+The Blade template uses `@props()` to declare expected props. Non-scalar props (arrays, objects) are not rendered automatically — map them to `data-*` attributes (or similar) in your own template.
 
 ## Testing
 
@@ -140,9 +144,9 @@ public function component_accepts_theme()
 
 The package runs three checks on pull requests (via GitHub Actions):
 
-1. **Pint**,PHP code style fixer
-2. **PHPStan**,static analysis at level 8
-3. **PHPUnit**,feature and unit tests
+1. **Pint**, PHP code style fixer
+2. **PHPStan**, static analysis at level 8
+3. **PHPUnit**, feature and unit tests
 
 Run `composer qa` locally to verify all three before submitting a PR.
 

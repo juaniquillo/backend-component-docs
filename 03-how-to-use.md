@@ -54,8 +54,8 @@ $div = ComponentBuilder::make(ComponentEnum::DIV)
 
 ### Prepend and unset
 
-- `prependContent($content, $key = null)`,adds content at the beginning of the content array
-- `unsetContent($key = null)`,if a key is given, removes that specific item; otherwise clears all content
+- `prependContent($content, $key = null)`, adds content at the beginning of the content array
+- `unsetContent($key = null)`, if a key is given, removes that specific item; otherwise clears all content
 
 ### Accessing content
 
@@ -118,7 +118,81 @@ $div->setContent('Hello');
 $div = DivComponent::make();
 ```
 
-Currently only `DivComponent` exists in this category,add more as needed.
+Currently only `DivComponent` exists in this category, add more as needed.
+
+## PropsComponent (third-party packages)
+
+`PropsComponent` in this package is an example of how third-party packages can create custom components with typed props. Create your own class implementing the same interfaces and using the same traits in your own namespace. (The example class aliases the contract as `PropsContract` to avoid colliding with its own class name — the interface itself is `Contracts\PropsComponent`.)
+
+The interfaces to implement: `BackendComponent`, `ContentComponent`, `Htmlable`, `PathComponent`, `PropsComponent`, `SettingsComponent`, `ThemeComponent`.
+
+The traits to use: `HasContent`, `HasPath`, `HasProps`, `HasSettings`, `IsBackendComponent`, `IsThemeable`.
+
+### Setting props
+
+Use **`setProp()`** for a single prop and **`setProps()`** for multiple at once:
+
+```php
+// In your own class:
+$component->setProp('title', 'Hello')
+    ->setProps(['count' => 5, 'items' => ['a', 'b']]);
+```
+
+Use **`getProp()`** and **`getProps()`** to retrieve:
+
+```php
+$title = $component->getProp('title');   // 'Hello'
+$all = $component->getProps();           // ['title' => 'Hello', 'count' => 5, 'items' => ['a', 'b']]
+```
+
+### Blade template conventions
+
+The Blade template resolves from the dotted path (e.g., `path.to.component` → `resources/views/components/path/to/component.blade.php`). Use `@props()` to declare expected props:
+
+```blade
+@props([
+    'title' => null,
+    'data' => [],
+])
+
+<div {{ $attributes->merge(['title' => $title]) }}>
+    {{ $title }}
+</div>
+```
+
+Non-scalar props (arrays, objects) are not rendered automatically — map them to `data-*` attributes (or similar) in your own template:
+
+```blade
+@props([
+    'dataProps' => [],
+    'customProp' => null,
+])
+
+@php
+    $localAttrs = [];
+    foreach ($dataProps as $key => $value) {
+        $localAttrs["data-{$key}"] = $value;
+    }
+    if($customProp) {
+        $localAttrs[$customProp->key] = $customProp->value;
+    }
+@endphp
+
+<div {{ $attributes->merge($localAttrs) }}>{{ $content }}{{ $slot }}</div>
+```
+
+### Rendering
+
+`toHtml()` uses `backend-component::_utilities.resolve-third-party-component`, which renders `<x-dynamic-component>` with the resolved path and attribute bag.
+
+Use `{{ $component }}` in Blade to render.
+
+### Feature testing
+
+```php
+$this->blade('{{ $component }}', ['component' => $component])
+    ->assertSee('Hello');
+```
 
 ## Settings
 
@@ -154,7 +228,7 @@ $modal = ModalUtil::make(
     ->getComponent();
 ```
 
-The modal is composed from `DIV` components with Alpine.js attributes,no separate blade template needed.
+The modal is composed from `DIV` components with Alpine.js attributes, no separate blade template needed.
 
 | Parameter | Type | Description |
 |---|---|---|
@@ -253,7 +327,7 @@ $html = $button->getCachedHtml();   // served from cache on subsequent calls
 $button->clearCache();              // invalidates the cached entry
 ```
 
-The cache key is generated from `md5(json_encode($toArray()))`,same component state always produces the same key. Livewire components bypass caching automatically.
+The cache key is generated from `md5(json_encode($toArray()))`, same component state always produces the same key. Livewire components bypass caching automatically.
 
 ### Cache configuration
 
@@ -287,11 +361,11 @@ Since the trait type-hints `Psr\SimpleCache\CacheInterface`, you can inject any 
 
 ### When to cache
 
-Cache components that are expensive to render (complex nested trees, many theme compilations) and whose content doesn't change per-request,such as documentation pages, static navigation, footer blocks, or reusable layout sections. Avoid caching components with dynamic or user-specific content unless you handle invalidation.
+Cache components that are expensive to render (complex nested trees, many theme compilations) and whose content doesn't change per-request, such as documentation pages, static navigation, footer blocks, or reusable layout sections. Avoid caching components with dynamic or user-specific content unless you handle invalidation.
 
 ## Rendering in Blade
 
-Components implement `Htmlable`, so you use `{{ $component }}`,never `{!! !!}` or `echo`:
+Components implement `Htmlable`, so you use `{{ $component }}`, never `{!! !!}` or `echo`:
 
 ```blade
 {{ $card }}
