@@ -11,7 +11,7 @@ Build dynamic, dynamic HTML components in PHP, no raw Blade HTML required.
 | 03 | [How to Use](03-how-to-use.md) | Creating components, content, attributes, nesting, Livewire, serialization |
 | 04 | [Builders and Enum](04-builders-and-enum.md) | Three builders, all 50+ enum cases |
 | 05 | [Theming](05-theming.md) | Theme file format, single/multi/batch apply |
-| 06 | [Blade Use](06-blade-use.md) | Template anatomy, $attrs bag, rendering pipeline |
+| 06 | [Blade Use](06-blade-use.md) | Template variables, rendering pipeline |
 | 07 | [Helpers](07-helpers.md) | Namespaced helper functions |
 | 08 | [Notes](08-notes.md) | Architecture, code style, testing, adding components |
 

@@ -4,7 +4,7 @@
 
 A Laravel package for building dynamic, dynamic HTML components entirely in PHP. Component trees are composed via PHP objects that implement `Htmlable`, rendering safely in Blade with `{{ $component }}`.
 
-Internally, the package uses Laravel's `x-dynamic-component` to resolve Blade views from namespaced component paths, giving you the full power of Laravel components without writing Blade HTML markup by hand.
+Internally, the package resolves each component to a Blade view from its namespaced path and renders it with the component's attributes and content, giving you the full power of Laravel Blade without writing HTML markup by hand.
 
 ### Key features
 
@@ -78,6 +78,6 @@ All Blade views are registered under the `backend-component::` namespace:
 
 - Components: `backend-component::components.div`, `backend-component::components.inline.button`
 - Themes: `backend-component::_themes.tailwind.action`
-- Internal utilities: `backend-component::_utilities.resolve-components`
+- Internal utilities: `backend-component::_utilities.resolve-components`, `backend-component::_utilities.resolve-component`
 
 You don't need to reference these directly, the builders resolve the correct paths for you.

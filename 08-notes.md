@@ -15,13 +15,19 @@ The package follows a **trait-per-concern** pattern. `MainBackendComponent` comp
 | Trait | Purpose |
 |---|---|
 | `HasContent` | Content array management (`setContent`, `setContents($overwrite)`, `prependContent`, `unsetContent`) |
-| `HasPath` | View namespace and component path resolution (`getName`, `useLocal`, `getComponentPath`) |
+| `HasPath` | View namespace and component path resolution (`getName`, `useLocal`, `getComponentPath`, `getViewPath`) |
 | `HasSettings` | Key-value settings bag (`setSetting`, `getSetting`, `setSettings`, `unsetSetting`) |
 | `IsBackendComponent` | HTML attributes (`setAttribute`, `setAttributes`, `getAttributes`) |
 | `IsThemeable` | Theme management (`setTheme`, `setThemes`, `getTheme`, `compileTheme`) |
 | `IsLivewireComponent` | Livewire integration (`setLivewire`, `setLivewireKey`, `setLivewireParams`) |
 
 Plus an `isFactory` trait on `ComponentFactory` for deserialization from arrays.
+
+## Rendering
+
+`MainBackendComponent::toHtml()` delegates to `_utilities.resolve-components`, which renders Livewire components with the Livewire directive and everything else through `_utilities.resolve-component`. That resolver builds a `ComponentAttributeBag` from the component attributes and includes the view resolved by `getViewPath()` with `$attributes`, `$slot` and `$settings`.
+
+Views are included as plain views instead of Blade component tags, so attribute names such as `@click` are preserved and `$settings` never reaches the HTML. `getComponentPath()` is the `x-dynamic-component` form of the path; do not use it with `view()` or `@include`.
 
 ## Code style conventions
 
@@ -42,24 +48,13 @@ Plus an `isFactory` trait on `ComponentFactory` for deserialization from arrays.
 
 2. **Create the Blade template** at `resources/views/components/path/to/component.blade.php`:
    ```blade
-   @props(['attrs' => null])
-   @php
-       $serverAttrs = [];
-       $content = null;
-       $slot = $slot ?? null;
-       if ($attrs) {
-           $serverAttrs = $attrs->getAttributes();
-           $content = $attrs->content;
-       }
-   @endphp
-   <your-element {{ $attributes->merge($serverAttrs) }}>{{ $content }}{{ $slot }}</your-element>
+   <your-element {{ $attributes }}>{{ $slot }}</your-element>
    ```
+   Templates receive `$attributes` (a `ComponentAttributeBag` with theme classes merged), `$slot` (processed content) and `$settings`. The view is resolved with `getViewPath()`. Use `{{ $attributes->merge([...]) }}` only when the element needs default attributes.
 
 3. **Write a feature test** at `tests/Feature/Components/{Category}/{Name}Test.php` following the standard test methods (see Testing section below).
 
-For **PropsComponent** (third-party packages), create your own class implementing `BackendComponent`, `ContentComponent`, `Htmlable`, `PathComponent`, `PropsComponent`, `SettingsComponent`, `ThemeComponent` and using traits `HasContent`, `HasPath`, `HasProps`, `HasSettings`, `IsBackendComponent`, `IsThemeable`. Use `setProp()`/`getProp()`/`setProps()`/`getProps()` for typed props, and `toHtml()` which renders via `backend-component::_utilities.resolve-third-party-component`. (The example class aliases the contract as `PropsContract` to avoid colliding with its own class name — the interface itself is `Contracts\PropsComponent`.)
-
-The Blade template uses `@props()` to declare expected props. Non-scalar props (arrays, objects) are not rendered automatically — map them to `data-*` attributes (or similar) in your own template.
+Third-party packages can implement `Contracts\BackendComponent` in their own namespace and choose their own view and rendering strategy. The package's concerns (`HasContent`, `HasPath`, `HasProps`, `HasSettings`, `IsBackendComponent`, `IsThemeable`) are opt-in traits. `PropsComponent` in this package is only a reference implementation of those contracts, not a required base class.
 
 ## Testing
 

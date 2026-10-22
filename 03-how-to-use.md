@@ -103,7 +103,7 @@ $card = ComponentBuilder::make(ComponentEnum::DIV)
 2. Implement `BackendComponent`, `IndividualComponent`, `ThemeComponent`, `Htmlable` (omit `ContentsComponent`+`HasContent` for self-closing elements)
 3. Use traits `IsBackendComponent`, `IsThemeable` (add `HasContent` only if the component can hold children)
 4. Define `getName()` to return the `ComponentEnum` value (or any dotted view path)
-5. Define `getComponentPath()` and `getPathOnly()` following the existing convention
+5. Define `getComponentPath()`, `getPathOnly()` and `getViewPath()` following the existing convention
 6. Wire up `getAttributeBag()`, `toHtml()`, `toArray()`, and a static `make()` factory
 7. Mark the class `final` (optional but recommended)
 
@@ -118,81 +118,13 @@ $div->setContent('Hello');
 $div = DivComponent::make();
 ```
 
-Currently only `DivComponent` exists in this category, add more as needed.
+Currently only `DivComponent` exists in this category, add more as needed. `DivComponent` does not use the `HasPath` trait, so it defines `getViewPath()` itself.
 
-## PropsComponent (third-party packages)
+## Third-party components
 
-`PropsComponent` in this package is an example of how third-party packages can create custom components with typed props. Create your own class implementing the same interfaces and using the same traits in your own namespace. (The example class aliases the contract as `PropsContract` to avoid colliding with its own class name — the interface itself is `Contracts\PropsComponent`.)
+Third-party packages can implement `Contracts\BackendComponent` in their own namespace and choose their own view and rendering strategy. The package's concerns (`HasContent`, `HasPath`, `HasProps`, `HasSettings`, `IsBackendComponent`, `IsThemeable`) are opt-in traits.
 
-The interfaces to implement: `BackendComponent`, `ContentComponent`, `Htmlable`, `PathComponent`, `PropsComponent`, `SettingsComponent`, `ThemeComponent`.
-
-The traits to use: `HasContent`, `HasPath`, `HasProps`, `HasSettings`, `IsBackendComponent`, `IsThemeable`.
-
-### Setting props
-
-Use **`setProp()`** for a single prop and **`setProps()`** for multiple at once:
-
-```php
-// In your own class:
-$component->setProp('title', 'Hello')
-    ->setProps(['count' => 5, 'items' => ['a', 'b']]);
-```
-
-Use **`getProp()`** and **`getProps()`** to retrieve:
-
-```php
-$title = $component->getProp('title');   // 'Hello'
-$all = $component->getProps();           // ['title' => 'Hello', 'count' => 5, 'items' => ['a', 'b']]
-```
-
-### Blade template conventions
-
-The Blade template resolves from the dotted path (e.g., `path.to.component` → `resources/views/components/path/to/component.blade.php`). Use `@props()` to declare expected props:
-
-```blade
-@props([
-    'title' => null,
-    'data' => [],
-])
-
-<div {{ $attributes->merge(['title' => $title]) }}>
-    {{ $title }}
-</div>
-```
-
-Non-scalar props (arrays, objects) are not rendered automatically — map them to `data-*` attributes (or similar) in your own template:
-
-```blade
-@props([
-    'dataProps' => [],
-    'customProp' => null,
-])
-
-@php
-    $localAttrs = [];
-    foreach ($dataProps as $key => $value) {
-        $localAttrs["data-{$key}"] = $value;
-    }
-    if($customProp) {
-        $localAttrs[$customProp->key] = $customProp->value;
-    }
-@endphp
-
-<div {{ $attributes->merge($localAttrs) }}>{{ $content }}{{ $slot }}</div>
-```
-
-### Rendering
-
-`toHtml()` uses `backend-component::_utilities.resolve-third-party-component`, which renders `<x-dynamic-component>` with the resolved path and attribute bag.
-
-Use `{{ $component }}` in Blade to render.
-
-### Feature testing
-
-```php
-$this->blade('{{ $component }}', ['component' => $component])
-    ->assertSee('Hello');
-```
+`PropsComponent` in this package is only a reference implementation of those contracts, not a required base class.
 
 ## Settings
 

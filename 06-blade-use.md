@@ -14,33 +14,22 @@ Never use `{!! !!}` or `echo`, the component handles escaping and HTML generatio
 
 ## Component view conventions
 
-Every component Blade template follows a consistent pattern:
+Every component Blade template is a plain view that renders one element:
 
 ```blade
 {{-- resources/views/components/div.blade.php --}}
-@props([
-    'attrs' => null,
-])
-
-@php
-    $serverAttrs = [];
-    $content = null;
-    $slot = $slot ?? null;
-
-    if($attrs) {
-        $serverAttrs = $attrs->getAttributes();
-        $content = $attrs->content;
-    }
-@endphp
-
-<div {{ $attributes->merge($serverAttrs) }}>{{ $content }}{{ $slot }}</div>
+<div {{ $attributes }}>{{ $slot }}</div>
 ```
 
-### Template anatomy
+### Template variables
 
-1. **`@props(['attrs' => null])`**, the component receives a `DefaultAttributeBag` as the `$attrs` prop
-2. **`@php` block**, extracts server attributes (merged with theme classes), content, and slot
-3. **Render**, the HTML element uses `{{ $attributes->merge($serverAttrs) }}` to combine server-set attributes with any attributes passed from Blade
+| Variable | Type | Description |
+|---|---|---|
+| `$attributes` | `ComponentAttributeBag` | HTML attributes merged with compiled theme classes |
+| `$slot` | `Htmlable` | Processed content (renders child components) |
+| `$settings` | `array` | Key-value settings bag (`setSetting()` / `setSettings()`) |
+
+Templates that do not use settings simply ignore the variable.
 
 ### Self-closing elements
 
@@ -48,22 +37,19 @@ For elements like `input`, `img`, and `col`, use `/>`:
 
 ```blade
 {{-- resources/views/components/form/text.blade.php --}}
-<input {{ $attributes->merge($serverAttrs) }}/>
+<input {{ $attributes->merge(['type' => 'text']) }} />
 ```
 
-## The $attrs property
+`merge()` only supplies defaults: attributes set through the PHP API always win over them.
 
-`$attrs` is a `DefaultAttributeBag` containing:
+### Delegating templates
 
-| Property | Type | Description |
-|---|---|---|
-| `getAttributes()` | `array` | Merged server attributes + compiled theme classes |
-| `content` | `?ContentsComponent` | Processed content (renders child components) |
-| `path` | `?string` | Component view path |
-| `settings` | `array` | Key-value settings bag |
-| `isLivewire` | `bool` | Whether the component is Livewire |
-| `livewireKey` | `?string` | Livewire component key |
-| `livewireParams` | `array` | Livewire parameters |
+Inputs that share the text input markup delegate to it and only change the type:
+
+```blade
+{{-- resources/views/components/form/email.blade.php --}}
+<x-backend-component::form.text {{ $attributes->merge(['type' => 'email']) }} />
+```
 
 ## Rendering pipeline
 
@@ -71,9 +57,25 @@ When `{{ $component }}` is called:
 
 1. `MainBackendComponent::toHtml()` loads `_utilities.resolve-components`
 2. If `isLivewire`, renders via `@livewire($name, $params, key($key))`
-3. Otherwise, renders via `<x-dynamic-component :component="$path" :attrs="$componentArray" />`
-4. The dynamic component resolves to the matching Blade template in the `components/` directory
-5. The Blade template receives the `$attrs` prop and renders the HTML
+3. Otherwise, `_utilities.resolve-component` builds a `ComponentAttributeBag` from `getAttributeBag()->getAttributes()` (attributes + compiled theme classes)
+4. `getViewPath()` resolves the matching Blade template in the `components/` directory (namespace + optional `setPath()` subdirectory + component name), which is included with `$attributes`, `$slot` (processed content) and `$settings`
+5. The template renders the HTML element
+
+### Where the view comes from
+
+Every component resolves its template through `getViewPath()`:
+
+| Component | `getViewPath()` |
+|---|---|
+| `ComponentBuilder::make(ComponentEnum::DIV)` | `backend-component::components.div` |
+| `ComponentBuilder::make(ComponentEnum::DIV)->useLocal()` | `components.div` |
+| `ComponentBuilder::make('img')->setPath('inline')` | `backend-component::components.inline.img` |
+
+The path is built from the view namespace, the `components/` directory, the optional subdirectory set with `setPath()`, and the component name.
+
+`getComponentPath()` is a different value: the `x-dynamic-component` form leaves the `components/` directory out because the tag resolver adds it. Never pass it to `view()` or `@include`; it resolves to a view such as `backend-component::.div`, which does not exist.
+
+`DivComponent` does not use the `HasPath` trait, so it implements `getViewPath()` itself.
 
 ## Passing attributes from Blade
 
@@ -91,7 +93,7 @@ $div = ComponentBuilder::make(ComponentEnum::DIV)
 
 ## Mixing with Livewire
 
-When the `isLivewire` flag is set, the rendering pipeline switches to `@livewire` instead of `x-dynamic-component`:
+When the `isLivewire` flag is set, the rendering pipeline switches to `@livewire` instead of rendering the component's Blade template:
 
 ```php
 $livewire = ComponentBuilder::make(ComponentEnum::DIV)
@@ -100,11 +102,17 @@ $livewire = ComponentBuilder::make(ComponentEnum::DIV)
     ->setLivewireParams(['teamId' => 5]);
 ```
 
-This renders as `@livewire('div', ['teamId' => 5], key('dashboard-stats'))` with the `attrs` data passed as a parameter.
+This renders as `@livewire('div', ['teamId' => 5], key('dashboard-stats'))`. Attributes, content and settings are not forwarded in this mode.
 
 ## Custom Blade templates
 
 When adding a new component type, create a new Blade file in `resources/views/components/` following the conventions above. The file path must match the enum value (e.g., `form.datalist` → `resources/views/components/form/datalist.blade.php`).
+
+Templates are included as plain views, so they must only rely on the `$attributes`, `$slot` and `$settings` variables. Do not declare props or blueprint the component server state.
+
+Plain views are used instead of Blade component tags on purpose: component tags compile attribute names into PHP variables, so Alpine attributes such as `@click` produce invalid PHP. Building a `ComponentAttributeBag` and including the view keeps attribute names untouched and keeps `$settings` out of the HTML.
+
+Third-party packages are not bound by this pipeline; they implement `Contracts\BackendComponent` and choose their own view and rendering strategy.
 
 ## Blade component syntax
 
